@@ -14,5 +14,5 @@ protected $fillable = [
 'fecha_inicio',
 'fecha_fin',
 'ubicacion',
-]
+];
 }
