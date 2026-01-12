@@ -1,0 +1,95 @@
+*** Begin Patch
+*** Update File: src/app/Http/Controllers/Controller.php
+@@
+-<?php
+-
+-namespace App\Http\Controllers;
+-use App\Models\Evento;
+-use Illuminate\Http\Request;
+-use Illuminate\Support\Facades\Validator;
+-class EventoController extends Controller
+-{
+-(...contenido eliminado por brevedad...)
+-}
++<?php
++
++namespace App\Http\Controllers;
++
++use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
++use Illuminate\Foundation\Bus\DispatchesJobs;
++use Illuminate\Foundation\Validation\ValidatesRequests;
++use Illuminate\Routing\Controller as BaseController;
++
++class Controller extends BaseController
++{
++    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
++}
+*** End Patch
+*** Begin Patch
+*** Update File: src/app/Http/Controllers/EventoController.php
+@@
+ <?php
+@@
+ use App\Models\Evento;
+ use Illuminate\Http\Request;
++use Illuminate\Support\Facades\Validator;
+@@
+     public function store(Request $request)
+     {
+-        //
++        $validator = Validator::make($request->all(), [
++            'titulo' => 'required',
++            'descripcion' => 'required',
++            'fecha_inicio' => 'required|date',
++            'fecha_fin' => 'required|date',
++            'ubicacion' => 'required',
++        ]);
++
++        if ($validator->fails()) {
++            return response()->json(['message' => 'Datos faltantes', 'status' => 400], 400);
++        }
++
++        $evento = Evento::create($request->only(['titulo','descripcion','fecha_inicio','fecha_fin','ubicacion']));
++
++        if (!$evento) {
++            return response()->json(['message' => 'Error al crear el evento', 'status' => 500], 500);
++        }
++
++        return response()->json(['evento' => $evento, 'status' => 201], 201);
+     }
+@@
+     public function show(Evento $evento)
+     {
+-        //
++        return response()->json(['evento' => $evento, 'status' => 200], 200);
+     }
+@@
+     public function update(Request $request, Evento $evento)
+     {
+-        //
++        $validator = Validator::make($request->all(), [
++            'titulo' => 'required',
++            'descripcion' => 'required',
++            'fecha_inicio' => 'required|date',
++            'fecha_fin' => 'required|date',
++            'ubicacion' => 'required',
++        ]);
++
++        if ($validator->fails()) {
++            return response()->json(['message' => 'Datos faltantes', 'status' => 400], 400);
++        }
++
++        $evento->fill($request->only(['titulo','descripcion','fecha_inicio','fecha_fin','ubicacion']));
++        $evento->save();
++
++        return response()->json(['evento' => $evento, 'status' => 200], 200);
+     }
+@@
+     public function destroy(Evento $evento)
+     {
+-        //
++        $evento->delete();
++        return response()->json(['message' => 'Evento eliminado', 'status' => 200], 200);
+     }
+ }
+*** End Patch
