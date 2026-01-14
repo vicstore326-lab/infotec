@@ -1,5 +1,3 @@
-version: '3.8' # Se recomienda siempre especificar la versión
-
 services:
   # --- Servicio de la Base de Datos ---
   mariadb:
